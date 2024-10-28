@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\C2brequest;
+use App\Models\B2bTransaction;
 use App\Models\STKrequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -34,11 +35,10 @@ class PaymentController extends Controller
     $Amount = $request->input('amount');
     $PartyA = $request->input('phone');
     $PartyB = 8834744;
-    $PhoneNumber = 254713030677;
+    $PhoneNumber = $PartyA;
     $CallBackURL = 'https://mpesa.learnsoftbeliotechsolutions.co.ke/payments/stkCallback';
     $AccountReference = 'Belio SPA';
     $TransactionDesc = 'Customer Goods Payment';
-    $Name = $request->input('name'); // Add name input
 
     try {
         // Send the STK push request to Safaricom API
@@ -100,45 +100,57 @@ public function b2b(Request $request)
         return $this->initiateB2BPayment($request);
     }
 
-public function initiateB2BPayment(Request $request)
-{
-    $accessToken = $this->token();
-    $url = 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest'; // B2B transaction endpoint
-
-    // Prepare the payload based on the information provided
-    $payload = [
-        "Initiator" => "testapi", // Your initiator name
-        "SecurityCredential" => "CdQ8SFsQh58T6El8wUyF1fH2h8xLBujZnk3O5CG2tH5bHSLpaKDcWZSJYuTNBt/UMJStH0/YzVEYuro9ztyI169X2hBtF1yH1Cubhlj5Pf1F5Vi9IHhSDv+YQpex44u/W6+9DWoyczs77L7Q+2ii+SdjKNL+olrtk2H9HTjXwfz4O/kQnt+RNM8eWBhfKhxnQVjBIpp/bB9Zl8b9yPrH95N4wY7fpcvQjJS76mf9wD2jQbc3hvE/QZTk/x5Id+9VYBb/6B6//45IVAEKPnL+HXOGchQvxYaoAP7z2Q+PXFq9cHS3NLciewicyVJR/MtC3wUUg+6tPaaGCWJlMlRVbQ==",
-        "CommandID" => "BusinessBuyGoods", // Use BusinessBuyGoods for B2B transactions
-        "SenderIdentifierType" => "4", // 4 for shortcode
-        "RecieverIdentifierType" => "4", // 4 for shortcode
-        "Amount" => "1", // Transaction amount
-        "PartyA" => "600977", // Your business shortcode
-        "PartyB" => "600000", // Target shortcode
-        "AccountReference" => "353353", // Your account reference
-        "Requester" => "254708374149", // The phone number requesting the transaction
-        "Remarks" => "OK", // Additional remarks
-        "QueueTimeOutURL" => "https://mydomain.com/b2b/queue/", // Your timeout URL
-        "ResultURL" => "https://mydomain.com/b2b/result/", // Your result URL
-    ];
-
-    try {
-        // Execute the request
-        $response = Http::withToken($accessToken)->post($url, $payload);
-        $res = json_decode($response->body());
-
-        if (isset($res->ResponseCode) && $res->ResponseCode == 0) {
-            // Handle successful response
-            // Save to database or perform additional actions here
-            return response()->json(['success' => true, 'data' => $res]);
-        } else {
-            return response()->json(['success' => false, 'error' => $res]);
+    public function initiateB2BPayment(Request $request)
+    {
+        $accessToken = $this->token();
+        $url = 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest'; // B2B transaction endpoint
+    
+        // Prepare the payload based on the information provided
+        $payload = [
+            "Initiator" => "testapi", // Your initiator name
+            "SecurityCredential" => "CdQ8SFsQh58T6El8wUyF1fH2h8xLBujZnk3O5CG2tH5bHSLpaKDcWZSJYuTNBt/UMJStH0/YzVEYuro9ztyI169X2hBtF1yH1Cubhlj5Pf1F5Vi9IHhSDv+YQpex44u/W6+9DWoyczs77L7Q+2ii+SdjKNL+olrtk2H9HTjXwfz4O/kQnt+RNM8eWBhfKhxnQVjBIpp/bB9Zl8b9yPrH95N4wY7fpcvQjJS76mf9wD2jQbc3hvE/QZTk/x5Id+9VYBb/6B6//45IVAEKPnL+HXOGchQvxYaoAP7z2Q+PXFq9cHS3NLciewicyVJR/MtC3wUUg+6tPaaGCWJlMlRVbQ==",
+            "CommandID" => "BusinessBuyGoods", // Use BusinessBuyGoods for B2B transactions
+            "SenderIdentifierType" => "4", // 4 for shortcode
+            "RecieverIdentifierType" => "4", // 4 for shortcode
+            "Amount" => $request->amount, // Use the amount from the request
+            "PartyA" => "600977", // Your business shortcode
+            "PartyB" => "600000", // Target shortcode
+            "AccountReference" => "353353", // Your account reference
+            "Requester" => "254708374149", // The phone number requesting the transaction
+            "Remarks" => "OK", // Additional remarks
+            "QueueTimeOutURL" => "https://mydomain.com/b2b/queue/", // Your timeout URL
+            "ResultURL" => "https://mydomain.com/b2b/result/", // Your result URL
+        ];
+    
+        try {
+            // Execute the request
+            $response = Http::withToken($accessToken)->post($url, $payload);
+            $res = json_decode($response->body());
+    
+            if (isset($res->ResponseCode) && $res->ResponseCode == 0) {
+                // Save to the database
+                $transaction = new B2bTransaction();
+                $transaction->originator_conversation_id = $res->OriginatorConversationID;
+                $transaction->conversation_id = $res->ConversationID;
+                $transaction->response_code = $res->ResponseCode;
+                $transaction->response_description = $res->ResponseDescription;
+                $transaction->amount = $request->amount;
+                $transaction->sender_till = $request->sender_till; // Save the sender_till from the request
+                $transaction->receiver_till = '600000'; // Save the receiver_till if needed
+                $transaction->account_reference = '353353'; // Use your account reference
+                $transaction->remarks = 'OK'; // Save remarks if needed
+                $transaction->save();
+    
+                return response()->json(['success' => true, 'data' => $res]);
+            } else {
+                return response()->json(['success' => false, 'error' => $res]);
+            }
+    
+        } catch (Throwable $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()]);
         }
-
-    } catch (Throwable $e) {
-        return response()->json(['success' => false, 'error' => $e->getMessage()]);
     }
-}
+    
     
 
     public function stkCallback() {

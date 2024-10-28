@@ -24,10 +24,6 @@
             <form action="{{ route('payments.initiatepush') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label for="c2b_name">Name</label>
-                    <input type="tel" class="form-control" id="c2b_name" name="name" required>
-                </div>
-                <div class="form-group">
                     <label for="c2b_phone">Phone Number</label>
                     <input type="tel" class="form-control" id="c2b_phone" name="phone" required>
                 </div>
@@ -43,7 +39,6 @@
             </form>
         </div>
 
-        <!-- B2B Tab -->
         <div class="tab-pane fade" id="b2b" role="tabpanel" aria-labelledby="b2b-tab">
     <form action="{{ route('payments.b2b') }}" method="POST">
         @csrf
