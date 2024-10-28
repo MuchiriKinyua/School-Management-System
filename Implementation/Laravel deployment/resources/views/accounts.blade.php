@@ -28,10 +28,6 @@
                     <input type="tel" class="form-control" id="c2b_phone" name="phone" required>
                 </div>
                 <div class="form-group">
-                    <label for="c2b_account_number">Account Number</label>
-                    <input type="text" class="form-control" id="c2b_account_number" name="account_number" required>
-                </div>
-                <div class="form-group">
                     <label for="c2b_amount">Amount</label>
                     <input type="number" class="form-control" id="c2b_amount" name="amount" required>
                 </div>

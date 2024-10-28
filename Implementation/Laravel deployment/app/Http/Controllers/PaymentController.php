@@ -17,7 +17,7 @@ class PaymentController extends Controller
    public function token(){
     $consumerKey = 'QAhtpLgSo7Rf9nfM6bG0K0HtrCgy07Pp8ovroNkyCuhMmtB9';
     $consumerSecret = 'd34b7XJnwRn4RMYgZEyIpwCaS0ZGYYiXGGFd7kCklHyw1ydQcobwZbWuV2EXEAqJ';
-    $url = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'; // Add grant type
+    $url = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 
     $response=Http::withBasicAuth($consumerKey,$consumerSecret)->get($url);
     return $response['access_token'];
@@ -103,56 +103,56 @@ public function b2b(Request $request)
     public function initiateB2BPayment(Request $request)
     {
         $accessToken = $this->token();
-        $url = 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest'; // B2B transaction endpoint
-    
-        // Prepare the payload based on the information provided
-        $payload = [
-            "Initiator" => "testapi", // Your initiator name
-            "SecurityCredential" => "CdQ8SFsQh58T6El8wUyF1fH2h8xLBujZnk3O5CG2tH5bHSLpaKDcWZSJYuTNBt/UMJStH0/YzVEYuro9ztyI169X2hBtF1yH1Cubhlj5Pf1F5Vi9IHhSDv+YQpex44u/W6+9DWoyczs77L7Q+2ii+SdjKNL+olrtk2H9HTjXwfz4O/kQnt+RNM8eWBhfKhxnQVjBIpp/bB9Zl8b9yPrH95N4wY7fpcvQjJS76mf9wD2jQbc3hvE/QZTk/x5Id+9VYBb/6B6//45IVAEKPnL+HXOGchQvxYaoAP7z2Q+PXFq9cHS3NLciewicyVJR/MtC3wUUg+6tPaaGCWJlMlRVbQ==",
-            "CommandID" => "BusinessBuyGoods", // Use BusinessBuyGoods for B2B transactions
-            "SenderIdentifierType" => "4", // 4 for shortcode
-            "RecieverIdentifierType" => "4", // 4 for shortcode
-            "Amount" => $request->amount, // Use the amount from the request
-            "PartyA" => "600977", // Your business shortcode
-            "PartyB" => "600000", // Target shortcode
-            "AccountReference" => "353353", // Your account reference
-            "Requester" => "254708374149", // The phone number requesting the transaction
-            "Remarks" => "OK", // Additional remarks
-            "QueueTimeOutURL" => "https://mydomain.com/b2b/queue/", // Your timeout URL
-            "ResultURL" => "https://mydomain.com/b2b/result/", // Your result URL
-        ];
-    
+        $url = 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest';
+        $PassKey = '1bf235dc92b21a2921665f672c11a4bb99905589a710f819ae230d5b4f008c60';
+        $BusinessShortCode = 6544046;  // This should be the initiator shortcode
+        $Timestamp = Carbon::now()->format('YmdHis');
+        $password = base64_encode($BusinessShortCode . $PassKey . $Timestamp);
+        $TransactionType = 'CustomerBuyGoodsOnline';
+        $Amount = $request->input('amount');
+        $PartyA = $BusinessShortCode;  
+        
+        // Use the till number from the request
+        $PartyB = $request->input('till');  
+        
+        $CallBackURL = 'https://mpesa.learnsoftbeliotechsolutions.co.ke/payments/stkCallback';
+        $AccountReference = 'Belio SPA';
+        $TransactionDesc = 'Payment for goods/services';
+
         try {
-            // Execute the request
-            $response = Http::withToken($accessToken)->post($url, $payload);
+            // Send the B2B payment request to Safaricom API
+            $response = Http::withToken($accessToken)->post($url, [
+                'Initiator' => $PartyA,  
+                'SecurityCredential' => 'Your_Security_Credential',
+                'CommandID' => 'BusinessBuyGoods',
+                "SenderIdentifierType" => "4",
+                "RecieverIdentifierType" => "4",
+                'Amount' => $Amount,
+                'PartyA' => $PartyA,
+                'PartyB' => $PartyB,
+                'AccountReference' => $AccountReference,
+                'TransactionDesc' => $TransactionDesc,
+                "Remarks" => "OK",
+                'QueueTimeOutURL' => $CallBackURL,
+                'ResultURL' => $CallBackURL  
+            ]);
+    
+            // Decode the JSON response body
             $res = json_decode($response->body());
     
+            // Check if ResponseCode exists before accessing it
             if (isset($res->ResponseCode) && $res->ResponseCode == 0) {
-                // Save to the database
-                $transaction = new B2bTransaction();
-                $transaction->originator_conversation_id = $res->OriginatorConversationID;
-                $transaction->conversation_id = $res->ConversationID;
-                $transaction->response_code = $res->ResponseCode;
-                $transaction->response_description = $res->ResponseDescription;
-                $transaction->amount = $request->amount;
-                $transaction->sender_till = $request->sender_till; // Save the sender_till from the request
-                $transaction->receiver_till = '600000'; // Save the receiver_till if needed
-                $transaction->account_reference = '353353'; // Use your account reference
-                $transaction->remarks = 'OK'; // Save remarks if needed
-                $transaction->save();
-    
-                return response()->json(['success' => true, 'data' => $res]);
+                // Handle successful response...
             } else {
-                return response()->json(['success' => false, 'error' => $res]);
+                return redirect()->back()->with('error', 'Transaction failed. Response: ' . json_encode($res));
             }
     
         } catch (Throwable $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()]);
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
     
-    
-
+        
     public function stkCallback() {
             $data=file_get_contents('php://input');
             Storage::disk('local')->put('stk.txt',$data);
@@ -312,6 +312,47 @@ public function stkQuery(){
         ]);
         
     }
+
+    public function ConfirmationForTill(){
+        $data = file_get_contents('php://input');
+        Storage::disk('local')->put('till_confirmation.txt', $data);  // Changed file name for clarity
+        $response = json_decode($data);
+    
+        // Extract relevant fields from the response
+        $TransactionType = $response->TransactionType;
+        $TransID = $response->TransID;
+        $TransTime = $response->TransTime;
+        $TransAmount = $response->TransAmount;
+        $BusinessShortCode = $response->BusinessShortCode;
+        $BillRefNumber = $response->BillRefNumber;
+        $InvoiceNumber = $response->InvoiceNumber;
+        $OrgAccountBalance = $response->OrgAccountBalance;
+        $ThirdPartyTransID = $response->ThirdPartyTransID;
+        $TillNumber = $response->MSISDN;  // Assuming you want to use the MSISDN as the till number
+    
+        // Create a new instance of your model (update this to your actual model)
+        $c2b = new C2brequest;
+        $c2b->TransactionType = $TransactionType;
+        $c2b->TransID = $TransID;
+        $c2b->TransTime = $TransTime;
+        $c2b->TransAmount = $TransAmount;
+        $c2b->BusinessShortCode = $BusinessShortCode;
+        $c2b->BillRefNumber = $BillRefNumber;
+        $c2b->InvoiceNumber = $InvoiceNumber;
+        $c2b->OrgAccountBalance = $OrgAccountBalance;
+        $c2b->ThirdPartyTransID = $ThirdPartyTransID;
+        $c2b->TillNumber = $TillNumber;  // Use the extracted till number
+        $c2b->FirstName = $response->FirstName ?? null; // Optional fields
+        $c2b->MiddleName = $response->MiddleName ?? null;
+        $c2b->LastName = $response->LastName ?? null;
+        $c2b->save();
+    
+        return response()->json([
+            'ResultCode' => 0,
+            'ResultDesc' => 'Accepted'
+        ]);
+    }
+    
 
     public function generateQRCode(Request $request)
     {
