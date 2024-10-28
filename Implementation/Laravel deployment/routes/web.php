@@ -29,8 +29,6 @@ Route::controller(PaymentController::class)
         Route::post('/confirmation', 'Confirmation')->name('confirmation');
         Route::get('/simulate', 'Simulate')->name('simulate');
         Route::post('/b2b', 'b2b')->name('b2b');
-        Route::get('/b2bresult', 'b2bResult')->name('b2bresult');
-        Route::get('/b2btimeout', 'b2bTimeout')->name('b2btimeout');
     });
 
 Route::get('/generate-qr-code', [PaymentController::class, 'generateQRCode'])->name('generate.qr.code');

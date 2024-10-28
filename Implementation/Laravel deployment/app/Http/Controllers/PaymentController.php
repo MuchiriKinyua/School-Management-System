@@ -70,7 +70,6 @@ class PaymentController extends Controller
             $payment = new STKrequests();
             $payment->phone = $PhoneNumber;
             $payment->amount = $Amount;
-            $payment->name = $Name; // Save name
             $payment->reference = $AccountReference;
             $payment->description = $TransactionDesc;
             $payment->MerchantRequestID = $MerchantRequestID;
@@ -89,6 +88,57 @@ class PaymentController extends Controller
     }
 }
 
+public function b2b(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'sender_till' => 'required|string',
+            'amount' => 'required|numeric',
+        ]);
+
+        // Call your B2B payment initiation method here
+        return $this->initiateB2BPayment($request);
+    }
+
+public function initiateB2BPayment(Request $request)
+{
+    $accessToken = $this->token();
+    $url = 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest'; // B2B transaction endpoint
+
+    // Prepare the payload based on the information provided
+    $payload = [
+        "Initiator" => "testapi", // Your initiator name
+        "SecurityCredential" => "CdQ8SFsQh58T6El8wUyF1fH2h8xLBujZnk3O5CG2tH5bHSLpaKDcWZSJYuTNBt/UMJStH0/YzVEYuro9ztyI169X2hBtF1yH1Cubhlj5Pf1F5Vi9IHhSDv+YQpex44u/W6+9DWoyczs77L7Q+2ii+SdjKNL+olrtk2H9HTjXwfz4O/kQnt+RNM8eWBhfKhxnQVjBIpp/bB9Zl8b9yPrH95N4wY7fpcvQjJS76mf9wD2jQbc3hvE/QZTk/x5Id+9VYBb/6B6//45IVAEKPnL+HXOGchQvxYaoAP7z2Q+PXFq9cHS3NLciewicyVJR/MtC3wUUg+6tPaaGCWJlMlRVbQ==",
+        "CommandID" => "BusinessBuyGoods", // Use BusinessBuyGoods for B2B transactions
+        "SenderIdentifierType" => "4", // 4 for shortcode
+        "RecieverIdentifierType" => "4", // 4 for shortcode
+        "Amount" => "1", // Transaction amount
+        "PartyA" => "600977", // Your business shortcode
+        "PartyB" => "600000", // Target shortcode
+        "AccountReference" => "353353", // Your account reference
+        "Requester" => "254708374149", // The phone number requesting the transaction
+        "Remarks" => "OK", // Additional remarks
+        "QueueTimeOutURL" => "https://mydomain.com/b2b/queue/", // Your timeout URL
+        "ResultURL" => "https://mydomain.com/b2b/result/", // Your result URL
+    ];
+
+    try {
+        // Execute the request
+        $response = Http::withToken($accessToken)->post($url, $payload);
+        $res = json_decode($response->body());
+
+        if (isset($res->ResponseCode) && $res->ResponseCode == 0) {
+            // Handle successful response
+            // Save to database or perform additional actions here
+            return response()->json(['success' => true, 'data' => $res]);
+        } else {
+            return response()->json(['success' => false, 'error' => $res]);
+        }
+
+    } catch (Throwable $e) {
+        return response()->json(['success' => false, 'error' => $e->getMessage()]);
+    }
+}
     
 
     public function stkCallback() {
@@ -275,84 +325,4 @@ public function stkQuery(){
         return view('accounts', compact('qrCodeMessage')); // Prompt message
     }
     
-
-    public function b2b(Request $request) {
-        // Retrieve Access Token
-        $accessToken = $this->token();  // Assuming this is your function for token retrieval
-    
-        // Set Initiator details
-        $InitiatorName = 'API_Username';  // Replace with actual Initiator Name
-        $InitiatorPassword = 'safaricom123!';  // Replace with the actual password
-        $certificatePath = Storage::disk('local')->get('SandboxCertificate.cer');  // Load the certificate
-    
-        // Get the public key from the certificate
-        $pk = openssl_get_publickey($certificatePath);
-    
-        // Encrypt the Initiator Password using the public key
-        openssl_public_encrypt(
-            $InitiatorPassword,
-            $encryptedPassword,
-            $pk,
-            OPENSSL_PKCS1_PADDING
-        );
-    
-        // Convert the encrypted password into base64 encoding
-        $SecurityCredential = base64_encode($encryptedPassword);
-    
-        // Define API parameters
-        $CommandID = 'BusinessBuyGoods';  
-        $Amount = $request->input('amount');
-        $PartyA = $request->input('sender_till');  // Replace with Sender Till Number
-        $PartyB = "000000";  // Replace with Receiver Till Number
-        $Remarks = 'Payment remarks';  
-        $QueueTimeOutURL = 'https://e1c7-196-207-169-62.ngrok-free.app/payments/b2btimeout';
-        $ResultURL = 'https://e1c7-196-207-169-62.ngrok-free.app/payments/b2bresult';  
-        $Occasion = 'fees payment';  
-        $SenderIdentifierType = '4';  // For till numbers
-        $ReceiverIdentifierType = '4';  // For till numbers
-    
-        // The correct URL for making the B2B request to Safaricom's sandbox
-        $url = 'https://sandbox.safaricom.co.ke/mpesa/b2b/v1/paymentrequest';
-    
-        // Make the HTTP request to Safaricom's API
-        $response = Http::withToken($accessToken)->post($url, [
-            'InitiatorName' => $InitiatorName,
-            'SecurityCredential' => $SecurityCredential,
-            'CommandID' => $CommandID,
-            'Amount' => $Amount,
-            'PartyA' => $PartyA,
-            'PartyB' => $PartyB,
-            'SenderIdentifierType' => $SenderIdentifierType,
-            'ReceiverIdentifierType' => $ReceiverIdentifierType,
-            'Remarks' => $Remarks,
-            'QueueTimeOutURL' => $QueueTimeOutURL,
-            'ResultURL' => $ResultURL,
-            'Occasion' => $Occasion,
-        ]);
-    
-        // Check the response from Safaricom
-        if ($response->successful()) {
-            // Log and return a successful response
-            return response()->json([
-                'message' => 'B2B Payment request successful',
-                'response' => $response->json(),
-            ], 200);
-        } else {
-            // Log and return a failed response
-            return response()->json([
-                'message' => 'B2B Payment request failed',
-                'response' => $response->json(),
-            ], 400);
-        }
-    }
-
-        public function b2bResult(){
-            $data=file_get_contents('php://input');
-            Storage::disk('local')->put('b2bresponse.txt', $data);
-        }
-
-        public function b2Timeout(){
-            $data=file_get_contents('php://input');
-            Storage::disk('local')->put('b2btimeout.txt', $data);
-        }
     }
