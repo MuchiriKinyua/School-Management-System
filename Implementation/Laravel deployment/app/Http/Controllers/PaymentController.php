@@ -105,16 +105,13 @@ public function b2b(Request $request)
         $accessToken = $this->token();
         $url = 'https://api.safaricom.co.ke/mpesa/b2b/v1/paymentrequest';
         $PassKey = '1bf235dc92b21a2921665f672c11a4bb99905589a710f819ae230d5b4f008c60';
-        $BusinessShortCode = 6544046;  // This should be the initiator shortcode
+        $BusinessShortCode = 6544046;  
         $Timestamp = Carbon::now()->format('YmdHis');
         $password = base64_encode($BusinessShortCode . $PassKey . $Timestamp);
         $TransactionType = 'CustomerBuyGoodsOnline';
         $Amount = $request->input('amount');
         $PartyA = $BusinessShortCode;  
-        
-        // Use the till number from the request
         $PartyB = $request->input('till');  
-        
         $CallBackURL = 'https://mpesa.learnsoftbeliotechsolutions.co.ke/payments/stkCallback';
         $AccountReference = 'Belio SPA';
         $TransactionDesc = 'Payment for goods/services';
