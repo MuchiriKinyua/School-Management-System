@@ -4,16 +4,13 @@
 <div class="container">
     <h1>Accounts</h1>
     
-    <!-- Tabs for C2B, B2B, QR Code -->
+    <!-- Tabs for C2B, B2B-->
     <ul class="nav nav-tabs" id="transactionTabs" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="c2b-tab" data-toggle="tab" href="#c2b" role="tab" aria-controls="c2b" aria-selected="true">C2B - Phone Number</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="b2b-tab" data-toggle="tab" href="#b2b" role="tab" aria-controls="b2b" aria-selected="false">C2B - Till Number</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="qrcode-tab" data-toggle="tab" href="#qrcode" role="tab" aria-controls="qrcode" aria-selected="false">QR Code</a>
         </li>
     </ul>
 
@@ -49,18 +46,6 @@
         <button type="submit" class="btn btn-primary">Pay</button>
     </form>
 </div>
-
-
-        <div class="tab-pane fade" id="qrcode" role="tabpanel" aria-labelledby="qrcode-tab">
-            <p>Please scan the image below to make the transaction:</p>
-    
-        <div class="text-center">
-            {!! QrCode::size(250)->generate($qrCodeMessage) !!}
-        </div>
-    </div>
-
-
-
 
     <!-- Display success or error messages -->
     @if(session('success'))

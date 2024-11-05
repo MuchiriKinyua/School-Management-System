@@ -23,6 +23,11 @@ class PaymentController extends Controller
     return $response['access_token'];
    }
 
+   public function showAccounts()
+{
+    return view('accounts'); 
+}
+
    public function initiateStkPush(Request $request)
 {
     $accessToken = $this->token();
@@ -348,31 +353,6 @@ public function stkQuery(){
             'ResultCode' => 0,
             'ResultDesc' => 'Accepted'
         ]);
-    }
-    
-
-    public function generateQRCode(Request $request)
-    {
-        return $this->createQRCodeData($request); // Call the shared method for QR code data
-    }
-    
-    public function showAccounts(Request $request)
-    {
-        return $this->createQRCodeData($request); // Reuse the same logic for generating QR code
-    }
-    
-    // public method to generate QR code data
-    public function createQRCodeData(Request $request)
-    {
-        $tillNumber = '9922091'; 
-        $amount = 1; // Static amount
-        $referenceNumber = $request->input('reference_number', 'ABC123');
-        $paymentUrl = 'https://9563-196-207-169-62.ngrok-free.app'; 
-    
-        $qrCodeMessage = "Please enter your pin to pay Kshs. {$amount} to Daraja-sandbox Account no. {$tillNumber}.";
-    
-        // Return the accounts view with the QR code message
-        return view('accounts', compact('qrCodeMessage')); // Prompt message
     }
     
     }

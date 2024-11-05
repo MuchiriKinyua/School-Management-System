@@ -31,15 +31,26 @@ Route::controller(PaymentController::class)
         Route::post('/b2b', 'b2b')->name('b2b');
     });
 
-Route::get('/generate-qr-code', [PaymentController::class, 'generateQRCode'])->name('generate.qr.code');
-Route::get('/accounts', function () {
-    return redirect('/generate-qr-code');
-});
-
-Route::get('/generate-qr', [App\Http\Controllers\DynamicQR::class, 'generateQRCode'])->name('generate.qr');
-
 Route::post('/check-email', [UserController::class, 'checkUserEmail']);
 Route::post('/payments', [PaymentController::class, 'callback']);
+
+Route::get('/accounts', [PaymentController::class, 'showAccounts'])->name('accounts.show');
+
+Route::resource('permissions', App\Http\Controllers\PermissionController::class);
+
+Route::resource('roles', App\Http\Controllers\RoleController::class);
+
+Route::get('roles/{roleId}/delete', [App\Http\Controllers\RoleController::class, 'destroy']);
+
+Route::get('roles/{roleId}/give-permissions', [App\Http\Controllers\RoleController::class, 'addPermissionToRole']);
+
+Route::put('roles/{roleId}/give-permissions', [App\Http\Controllers\RoleController::class, 'givePermissionToRole']);
+
+Route::resource('users', App\Http\Controllers\UserController::class);
+
+Route::get('users/{userId}/delete', [App\Http\Controllers\UserController::class, 'destroy']);
+
+Route::get('permissions/{permissionId}/delete', [App\Http\Controllers\PermissionController::class, 'destroy']);
 
 Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('verified');
 
