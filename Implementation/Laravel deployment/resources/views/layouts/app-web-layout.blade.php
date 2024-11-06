@@ -1,3 +1,4 @@
+<!-- resources/views/layouts/app-web-layout.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +12,7 @@
 </head>
 <body>
     <div>
-        @yield('content')
+        @yield('content') <!-- This will render the content section from the child views -->
     </div>
 </body>
 </html>

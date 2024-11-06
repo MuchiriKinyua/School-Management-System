@@ -13,7 +13,22 @@ class PermissionsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = [
+        $data = [   
+
+                    'createrole-list',
+                    'viewrole-create',
+                    'updaterole-edit',
+                    'deleterole-delete',
+
+                    'createcategory-list',
+                    'viewcategory-create',
+                    'updatecategory-edit',
+                    'deletecategory-delete',
+
+                    'createpermission-list',
+                    'viewpermission-create',
+                    'updatepermission-edit',
+                    'deletepermission-delete',
 
                     'casecategory-list',
                     'casecategory-create',
