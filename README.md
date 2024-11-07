@@ -1,6 +1,6 @@
 # SchoolERP </br>
 
-![schoolerp1](https://github.com/user-attachments/assets/7af0a483-9ad8-41c9-87ca-ad1a4560c8b5)
+![schoolerp](https://github.com/user-attachments/assets/843cc70a-214e-4572-9381-c3a2a2948bbf)
 
 ## 1. Problem Statement </br>
 The schoolerp project addresses the need for efficient student and parent management in schools, particularly to streamline enrollment, track student records, and facilitate parent-student connections. In many schools, these processes are manually handled, leading to inefficiencies, data errors, and difficulties in keeping stakeholders informed and engaged. </br>
@@ -25,7 +25,7 @@ MySQL database server </br>
 XAMPP (for Apache and MySQL) or an equivalent LAMP stack on Ubuntu </br>
 M-Pesa sandbox credentials (for testing purposes) </br>
 
-![schoolerp](https://github.com/user-attachments/assets/843cc70a-214e-4572-9381-c3a2a2948bbf)
+![schoolerp1](https://github.com/user-attachments/assets/7af0a483-9ad8-41c9-87ca-ad1a4560c8b5)
 
 ## 5. Conclusions </br>
 The schoolerp project demonstrates a holistic approach to school management by integrating student and parent management with a secure, convenient payment solution. </br>
