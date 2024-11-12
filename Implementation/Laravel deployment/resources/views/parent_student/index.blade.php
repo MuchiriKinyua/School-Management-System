@@ -21,7 +21,23 @@
                                 <button type="submit" class="btn btn-primary">Import</button>
                             </div>
                         </form>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <form action="{{ url('parentstudent/export') }}" method="GET">
 
+                                    <div class="input-group mt-3"></div>
+                                        <select name="type" class="form-control">
+                                            <option value="">Select Type</option>
+                                            <option value="xlsx">XLSX</option>
+                                            <option value="csv">CSV</option>
+                                            <option value="xls">XLS</option>
+                                            <option value="pdf">PDF</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-success mt-3">Download</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <hr>
                         <table class="table">
     <thead>

@@ -7,7 +7,9 @@ use App\Models\Student;
 use App\Models\ParentModel;  
 use Illuminate\Http\Request;
 use App\Imports\ParentStudentImport;
+use App\Exports\ParentStudentExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ParentStudentController extends Controller
 {
@@ -56,5 +58,32 @@ class ParentStudentController extends Controller
             // Handle error in case of failure
             return back()->with('status', 'There was an error importing the data: ' . $e->getMessage());
         }
+    }
+    public function export(Request $request) 
+    {   
+        if($request->type == "xlsx"){
+            $extension = "xlsx";
+            $exportFormat = \Maatwebsite\Excel\Excel::XLSX;
+        }
+        elseif($request->type == "csv"){
+            $extension = "csv";
+            $exportFormat = \Maatwebsite\Excel\Excel::CSV;
+        }
+        elseif($request->type == "xls"){
+            $extension = "xls";
+            $exportFormat = \Maatwebsite\Excel\Excel::XLS;
+        }
+        elseif ($request->type == "pdf") {
+            $parentstudent = ParentStudentRelation::all();
+            $pdf = Pdf::loadView('parent_student.export', compact('parentstudent'));
+            $filename = 'parentstudent-' . date('d-m-Y') . '.pdf';
+            return $pdf->download($filename);
+        }
+        else{
+            $extension = "xlsx";
+            $exportFormat = \Maatwebsite\Excel\Excel::XLSX;
+        }
+        $filename = 'parentstudent-'.date('d-m-Y').'.'.$extension;
+        return Excel::download(new ParentStudentExport, $filename, $exportFormat);
     }
 }

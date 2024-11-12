@@ -19,6 +19,9 @@ Route::get('/', function () {
 Auth::routes(['verify' => true]);
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::get('parentstudent/export/', [App\Http\Controllers\ParentStudentController::class, 'export']);
+Route::get('student/export/', [App\Http\Controllers\StudentController::class, 'export']);
+Route::get('parents/export/', [App\Http\Controllers\ParentsController::class, 'export']);
 
 Route::post('/login', [LoginController::class, 'login']);
 
