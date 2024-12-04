@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\ParentStudentController;
+use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PredictionController;
 
 Route::get('/', function () {
@@ -93,3 +94,8 @@ Route::resource('admin/employees', App\Http\Controllers\Admin\employeesControlle
         'create' => 'admin.employees.create',
         'edit' => 'admin.employees.edit'
     ]);
+Route::resource('polls', App\Http\Controllers\PollController::class);
+
+Route::resource('uploads', App\Http\Controllers\UploadController::class);
+Route::get('/', [UploadController::class, 'index']);
+Route::post('/uploadFile', [UploadController::class, 'uploadFile'])->name('uploadFile');

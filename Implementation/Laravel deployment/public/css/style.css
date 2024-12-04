@@ -62,4 +62,26 @@ body{
     margin-top: 100px;
 }
 
- 
+ /* Dropzone Custom Styles */
+/* Add this to your app.css or custom stylesheet */
+.dropzone-container {
+    max-width: 800px; /* Adjust the width to your preference */
+    margin: 0 auto; /* Center the container */
+}
+
+.dz-message {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    background-color: #f7f7f7;
+    cursor: pointer;
+}
+
+.dz-message i {
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
