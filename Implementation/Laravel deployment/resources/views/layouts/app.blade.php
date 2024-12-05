@@ -1,9 +1,6 @@
 <x-laravel-ui-adminlte::adminlte-layout>
-
     <title>School ERP</title>
     <title>{{ config('app.name') }}</title>
-
-    <!-- <meta name="csrf-token" content="{{ csrf_token() }}">  -->
 
     <body class="hold-transition sidebar-mini layout-fixed">
         <div class="wrapper">
@@ -77,14 +74,3 @@
         </div>
     </body>
 </x-laravel-ui-adminlte::adminlte-layout>
-
-<script>
-    $(document).ready(function() {
-        $("#date_of_birth").datepicker({
-            dateFormat: "yy-mm-dd", // Format the date to match your database
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "1900:+0" // Change as needed
-        });
-    });
-</script>

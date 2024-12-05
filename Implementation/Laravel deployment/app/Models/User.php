@@ -44,5 +44,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
     ];
     // app/Models/User.php
-
+    public function polls()
+    {
+        return $this->hasMany(Poll::class, 'created_by');
+    }
 }

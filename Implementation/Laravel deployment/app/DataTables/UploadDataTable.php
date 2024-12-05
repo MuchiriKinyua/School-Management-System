@@ -66,7 +66,6 @@ class UploadDataTable extends DataTable
     protected function getColumns()
     {
         return [
-            'file_name'
         ];
     }
 

@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Poll;
+use App\Enums\PollStatus;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePollRequest extends FormRequest
@@ -14,18 +15,27 @@ class UpdatePollRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return  auth()->user()->is($this->poll->user) && $this->poll->status == PollStatus::PENDING->value;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
+    public function prepareForValidation()
+    {
+
+        $this->merge([
+            'start_at' => Carbon::parse($this->start_date . $this->start_time)->toDateTimeString(),
+            'end_at' => Carbon::parse($this->end_date . $this->end_time)->toDateTimeString(),
+        ]);
+
+    }
+
+
     public function rules()
     {
-        $rules = Poll::$rules;
-        
-        return $rules;
+        return [
+            'title' => ['required', 'string'],
+            'start_at' => ['required', 'date' ,'after_or_equal:now'],
+            'end_at' => ['required', 'date' ,'after:start_at'],
+            'options' => ['required', 'array', 'min:2']
+        ];
     }
 }

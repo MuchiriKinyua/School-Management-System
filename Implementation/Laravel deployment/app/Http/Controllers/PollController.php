@@ -2,126 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\PollDataTable;
+use App\Enums\PollStatus;
 use App\Http\Requests\CreatePollRequest;
 use App\Http\Requests\UpdatePollRequest;
-use App\Http\Controllers\AppBaseController;
-use App\Repositories\PollRepository;
-use Illuminate\Http\Request;
-use Flash;
+use App\Http\Requests\VoteRequest;
+use App\Models\Option;
+use App\Models\Poll;
+use App\Models\Vote;
 
-class PollController extends AppBaseController
+class PollController extends Controller
 {
-    /** @var PollRepository $pollRepository*/
-    private $pollRepository;
-
-    public function __construct(PollRepository $pollRepo)
-    {
-        $this->pollRepository = $pollRepo;
-    }
-
-    /**
-     * Display a listing of the Poll.
-     */
-    public function index(PollDataTable $pollDataTable)
-    {
-    return $pollDataTable->render('polls.index');
-    }
-
-
-    /**
-     * Show the form for creating a new Poll.
-     */
-    public function create()
-    {
-        return view('polls.create');
-    }
-
-    /**
-     * Store a newly created Poll in storage.
-     */
     public function store(CreatePollRequest $request)
     {
-        $input = $request->all();
+        $poll = auth()->user()->polls()->create($request->safe()->except('options'));
 
-        $poll = $this->pollRepository->create($input);
+        $poll->options()->createMany($request->options);
 
-        Flash::success('Poll saved successfully.');
-
-        return redirect(route('polls.index'));
+        return redirect()->route('poll.index')->with('success', 'Poll created successfully!');
     }
 
-    /**
-     * Display the specified Poll.
-     */
-    public function show($id)
+    public function index()
     {
-        $poll = $this->pollRepository->find($id);
+        $polls = auth()->user()->polls()->select('title','status','id')->paginate(10);
 
-        if (empty($poll)) {
-            Flash::error('Poll not found');
-
-            return redirect(route('polls.index'));
-        }
-
-        return view('polls.show')->with('poll', $poll);
+        return view('polls.list', compact('polls'));
     }
 
-    /**
-     * Show the form for editing the specified Poll.
-     */
-    public function edit($id)
+    public function edit(Poll $poll)
     {
-        $poll = $this->pollRepository->find($id);
+        abort_if(auth()->user()->isNot($poll->user), 403);
+        abort_if($poll->status != PollStatus::PENDING->value, 404);
 
-        if (empty($poll)) {
-            Flash::error('Poll not found');
-
-            return redirect(route('polls.index'));
-        }
-
-        return view('polls.edit')->with('poll', $poll);
+        $poll = $poll->load('options');
+        return view('polls.update', compact('poll'));
     }
 
-    /**
-     * Update the specified Poll in storage.
-     */
-    public function update($id, UpdatePollRequest $request)
+    public function update(UpdatePollRequest $request, Poll $poll)
     {
-        $poll = $this->pollRepository->find($id);
 
-        if (empty($poll)) {
-            Flash::error('Poll not found');
+        $data = $request->safe()->except('options');
 
-            return redirect(route('polls.index'));
-        }
+        $poll->update($data);
 
-        $poll = $this->pollRepository->update($request->all(), $id);
+        $poll->options()->delete();
 
-        Flash::success('Poll updated successfully.');
+        $poll->options()->createMany($request->options);
 
-        return redirect(route('polls.index'));
+        return to_route('poll.index');
     }
 
-    /**
-     * Remove the specified Poll from storage.
-     *
-     * @throws \Exception
-     */
-    public function destroy($id)
+    public function delete(Poll $poll)
     {
-        $poll = $this->pollRepository->find($id);
-
-        if (empty($poll)) {
-            Flash::error('Poll not found');
-
-            return redirect(route('polls.index'));
+        if ($poll->status != PollStatus::PENDING->value) {
+            abort(404,'No Pending poll');
         }
 
-        $this->pollRepository->delete($id);
+        $poll->options()->delete();
 
-        Flash::success('Poll deleted successfully.');
+        $poll->delete();
 
-        return redirect(route('polls.index'));
+        return back();
+    }
+
+    public function show(Poll $poll)
+    {
+        $poll = $poll->load('options');
+
+        $selectedOption = $poll->votes()->where('user_id', auth()->id())->first()?->option_id;
+
+        if ($poll->user->is(auth()->user())) {
+            return view('polls.show', compact('poll' ,'selectedOption'));
+        }
+
+        abort_if($poll->status != PollStatus::STARTED->value, 404);
+
+
+        return view('polls.show', compact('poll', 'selectedOption'));
+    }
+
+    public function vote(VoteRequest $request, Poll $poll)
+    {
+
+        abort_if($poll->status != PollStatus::STARTED->value, 404);
+        $selectedOption = $poll->votes()->where('user_id', auth()->id())->first()->option;
+
+        $poll->votes()->updateOrCreate(['user_id'=>auth()->id()],['option_id'=>$request->option_id]);
+
+        $newOption =  Option::find($request->option_id);
+        $newOption->increment('votes_count');
+
+        if ($selectedOption) {
+            $selectedOption->decrement('votes_count');
+        }
+
+        $selectedOption = $newOption;
+        return back();
     }
 }

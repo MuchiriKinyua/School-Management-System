@@ -8,8 +8,6 @@ use App\Repositories\BaseRepository;
 class PollRepository extends BaseRepository
 {
     protected $fieldSearchable = [
-        'choice',
-        'answer'
     ];
 
     public function getFieldsSearchable(): array

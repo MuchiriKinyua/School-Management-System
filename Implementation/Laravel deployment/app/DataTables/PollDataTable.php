@@ -66,8 +66,6 @@ class PollDataTable extends DataTable
     protected function getColumns()
     {
         return [
-            'choice',
-            'answer'
         ];
     }
 

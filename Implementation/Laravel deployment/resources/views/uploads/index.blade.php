@@ -7,7 +7,7 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
-            <div class="col-sm-6">
+            <div class="col-sm-12 text-center"> <!-- Added 'text-center' to center the text -->
                 <h1>Uploads</h1>
             </div>
         </div>
@@ -15,8 +15,11 @@
 </section>
 
 <body>
-    <!-- Correct the route here -->
-    <form action="{{ route('uploadFile') }}" class="dropzone"></form>
+    <!-- Wrapper to control the width and center the dropzone -->
+    <div class="dropzone-wrapper" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+        <!-- Correct the route here -->
+        <form action="{{ route('uploadFile') }}" class="dropzone"></form>
+    </div>
 
 <script type="text/javascript">
 

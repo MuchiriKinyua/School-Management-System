@@ -2,28 +2,72 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Poll extends Model
 {
+    use HasFactory;
+
     public $table = 'polls';
 
     public $fillable = [
-        'choice',
-        'answer'
     ];
 
+    protected $guarded = [];
+
+
     protected $casts = [
-        'choice' => 'string',
-        'answer' => 'string'
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
     ];
 
     public static array $rules = [
-        'choice' => 'required|string|max:255',
-        'answer' => 'required|string|max:65535',
-        'created_at' => 'required',
-        'updated_at' => 'required'
+        'start_at' => 'datetime',
+        'end_at' => 'datetime',
+        'created_at' => 'nullable',
+        'updated_at' => 'nullable'
     ];
 
-    
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function options()
+    {
+        return $this->hasMany(Option::class);
+    }
+
+    public function getStartDateAttribute()
+    {
+        return $this->start_at->format('M d, Y');
+    }
+
+    public function getStartTimeAttribute()
+    {
+        return $this->start_at->format('h:i A');
+    }
+
+    public function getEndDateAttribute()
+    {
+        return $this->end_at->format('M d, Y');
+    }
+
+    public function getEndTimeAttribute()
+    {
+        return $this->end_at->format('h:i A');
+    }
+
+    public function getEndDateFormatAttribute()
+    {
+        return $this->end_at->diffForHumans();
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
+    }
+
 }

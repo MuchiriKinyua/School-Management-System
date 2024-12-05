@@ -1,31 +1,39 @@
-@extends('layouts.app')
+@extends('layouts.home')
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-Poll Details
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <a class="btn btn-default float-right"
-                       href="{{ route('polls.index') }}">
-                                                    Back
-                                            </a>
-                </div>
-            </div>
-        </div>
-    </section>
+@push('polls-styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+@endpush
 
-    <div class="content px-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    @include('polls.show_fields')
-                </div>
-            </div>
-        </div>
+@push('polls-scripts')
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+@endpush
+    <div class="container">
+
+        <h4 class="center">
+            {{$poll->title}}
+        </h4>
+
+        <h6>
+           {{$poll->EndDateFormat}}
+        </h6>
+
+        <form action="{{route('poll.vote',[$poll])}}" method="post">
+            @csrf
+
+            @foreach($poll->options as $option)
+
+               <p>
+                <label>
+                  <input name="option_id" type="radio" value="{{$option->id}}" @if ($selectedOption == $option->id) checked @endif />
+                  <span>{{$option->content}}  {{$option->votes_count}}</span>
+                </label>
+            </p>
+            @endforeach
+
+            <button class="waves-effect waves-light btn info darken-2" type="submit">
+                vote
+            </button>
+        </form>
     </div>
 @endsection

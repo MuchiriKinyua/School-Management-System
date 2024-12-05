@@ -12,6 +12,7 @@ use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\ParentStudentController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PredictionController;
+use App\Http\Controllers\PollController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -99,3 +100,15 @@ Route::resource('polls', App\Http\Controllers\PollController::class);
 Route::resource('uploads', App\Http\Controllers\UploadController::class);
 Route::get('/', [UploadController::class, 'index']);
 Route::post('/uploadFile', [UploadController::class, 'uploadFile'])->name('uploadFile');
+
+Route::prefix('poll')->middleware('auth')->group(function(){
+    Route::view('create', 'polls.create')->name('poll.create');
+    Route::post('create', [PollController::class, 'store'])->name('poll.store');
+    Route::get('/', [PollController::class,'index'])->name('poll.index');
+    Route::get('/update/{poll}', [PollController::class,'edit'])->name('poll.edit');
+    Route::put('/update/{poll}', [PollController::class,'update'])->name('poll.update');
+    Route::get('delete/{poll}',[PollController::class,'delete'])->name('poll.delete');
+
+    Route::get('/{poll}', [PollController::class,'show'])->name('poll.show');
+    Route::post('/{poll}/vote', [PollController::class,'vote'])->name('poll.vote');
+});

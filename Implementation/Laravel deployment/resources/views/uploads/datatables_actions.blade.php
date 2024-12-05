@@ -1,4 +1,4 @@
-{!! Form::open(['route' => ['uploads.destroy', $id], 'method' => 'delete']) !!}
+<!-- {!! Form::open(['route' => ['uploads.destroy', $id], 'method' => 'delete']) !!}
 <div class='btn-group'>
     <a href="{{ route('uploads.show', $id) }}" class='btn btn-default btn-xs'>
         <i class="fa fa-eye"></i>
@@ -13,4 +13,4 @@
 
     ]) !!}
 </div>
-{!! Form::close() !!}
+{!! Form::close() !!} -->
