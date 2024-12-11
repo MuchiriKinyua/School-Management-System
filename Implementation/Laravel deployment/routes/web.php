@@ -13,6 +13,7 @@ use App\Http\Controllers\ParentStudentController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\PollController;
+use App\Http\Controllers\TimetableController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -112,3 +113,15 @@ Route::prefix('poll')->middleware('auth')->group(function(){
     Route::get('/{poll}', [PollController::class,'show'])->name('poll.show');
     Route::post('/{poll}/vote', [PollController::class,'vote'])->name('poll.vote');
 });
+Route::resource('grades', App\Http\Controllers\GradeController::class);
+Route::resource('schedules', App\Http\Controllers\ScheduleController::class);
+Route::resource('breaks', App\Http\Controllers\BreakController::class);
+Route::resource('teachers', App\Http\Controllers\TeacherController::class);
+
+Route::get('timetable/export/pdf', [TimetableController::class, 'exportPDF'])->name('timetable.export.pdf');
+Route::post('generate-timetable-by-grade', [TimetableController::class, 'generateTimetableForGrade'])->name('generate.timetable.by.grade');
+Route::get('/generate-timetable/{gradeId}', [TimetableController::class, 'generateTimetableForGrade']);
+Route::get('/generate-timetable', [TimetableController::class, 'generateTimetable'])->name('generate.timetable');
+Route::get('/timetable', [TimetableController::class, 'index'])->name('timetable');
+Route::resource('timetables', TimetableController::class);
+Route::delete('/timetable', [TimetableController::class, 'destroy'])->name('delete.timetable');
