@@ -1,7 +1,4 @@
-<!-- resources/views/role-permission/user/index.blade.php -->
-@extends('layouts.app-web-layout')
-
-@section('title', 'Roles')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">

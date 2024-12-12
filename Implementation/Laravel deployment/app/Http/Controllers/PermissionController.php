@@ -2,54 +2,126 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\PermissionDataTable;
+use App\Http\Requests\CreatePermissionRequest;
+use App\Http\Requests\UpdatePermissionRequest;
+use App\Http\Controllers\AppBaseController;
+use App\Repositories\PermissionRepository;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
+use Flash;
 
-class PermissionController extends Controller
+class PermissionController extends AppBaseController
 {
-    public function index(){
-        $permissions = Permission::get();
-        return view('role-permission.permission.index', [
-            'permissions' => $permissions
-        ]);    
+    /** @var PermissionRepository $permissionRepository*/
+    private $permissionRepository;
+
+    public function __construct(PermissionRepository $permissionRepo)
+    {
+        $this->permissionRepository = $permissionRepo;
     }
-    public function create(){
-        return view('role-permission.permission.create');
+
+    /**
+     * Display a listing of the Permission.
+     */
+    public function index(PermissionDataTable $permissionDataTable)
+    {
+    return $permissionDataTable->render('permissions.index');
     }
-    public function store(Request $request){
-        $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'unique:permissions,name'
-            ]
-            ]);
-            Permission::create([
-                'name' => $request->name
-            ]);
-            return redirect('permissions')->with('status','Permission Created Successfully');
+
+
+    /**
+     * Show the form for creating a new Permission.
+     */
+    public function create()
+    {
+        return view('permissions.create');
     }
-    public function edit(Permission $permission){
-        return view('role-permission.permission.edit',[
-            'permission' => $permission
-        ]);
+
+    /**
+     * Store a newly created Permission in storage.
+     */
+    public function store(CreatePermissionRequest $request)
+    {
+        $input = $request->all();
+
+        $permission = $this->permissionRepository->create($input);
+
+        Flash::success('Permission saved successfully.');
+
+        return redirect(route('permissions.index'));
     }
-    public function update(Request $request, Permission $permission){
-        $request->validate([
-            'name' => [
-            'required',
-            'string',
-            'unique:permissions,name,'.$permission->id
-        ]
-        ]);
-        $permission->update([
-            'name' => $request->name
-        ]);
-        return redirect('permissions')->with('status','Permission Updated Successfully');
+
+    /**
+     * Display the specified Permission.
+     */
+    public function show($id)
+    {
+        $permission = $this->permissionRepository->find($id);
+
+        if (empty($permission)) {
+            Flash::error('Permission not found');
+
+            return redirect(route('permissions.index'));
+        }
+
+        return view('permissions.show')->with('permission', $permission);
     }
-    public function destroy($permissionId){
-        $permission = Permission::find($permissionId);
-        $permission->delete();
-        return redirect('permissions')->with('status','Permission Deleted Successfully');
+
+    /**
+     * Show the form for editing the specified Permission.
+     */
+    public function edit($id)
+    {
+        $permission = $this->permissionRepository->find($id);
+
+        if (empty($permission)) {
+            Flash::error('Permission not found');
+
+            return redirect(route('permissions.index'));
+        }
+
+        return view('permissions.edit')->with('permission', $permission);
+    }
+
+    /**
+     * Update the specified Permission in storage.
+     */
+    public function update($id, UpdatePermissionRequest $request)
+    {
+        $permission = $this->permissionRepository->find($id);
+
+        if (empty($permission)) {
+            Flash::error('Permission not found');
+
+            return redirect(route('permissions.index'));
+        }
+
+        $permission = $this->permissionRepository->update($request->all(), $id);
+
+        Flash::success('Permission updated successfully.');
+
+        return redirect(route('permissions.index'));
+    }
+
+    /**
+     * Remove the specified Permission from storage.
+     *
+     * @throws \Exception
+     */
+    public function destroy($id)
+    {
+        $permission = $this->permissionRepository->find($id);
+
+        if (empty($permission)) {
+            Flash::error('Permission not found');
+
+            return redirect(route('permissions.index'));
+        }
+
+        $this->permissionRepository->delete($id);
+
+        Flash::success('Permission deleted successfully.');
+
+        return redirect(route('permissions.index'));
     }
 }

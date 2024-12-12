@@ -5,8 +5,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\ParentStudentController;
@@ -14,6 +12,8 @@ use App\Http\Controllers\UploadController;
 use App\Http\Controllers\PredictionController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\TimetableController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\RoleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,14 +59,6 @@ Route::post('/students', [StudentController::class, 'store'])->name('students.st
 Route::post('/students/upload', [StudentController::class, 'upload'])->name('students.upload');
 
 Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
-
-Route::resource('permissions', PermissionController::class);
-Route::get('permissions/{permissionId}/delete', [PermissionController::class, 'destroy']);
-
-Route::resource('roles', RoleController::class);
-Route::get('roles/{roleId}/delete', [RoleController::class, 'destroy']);
-Route::get('roles/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
-Route::put('roles/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
 
 Route::resource('users', UserController::class);
 Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
@@ -125,3 +117,8 @@ Route::get('/generate-timetable', [TimetableController::class, 'generateTimetabl
 Route::get('/timetable', [TimetableController::class, 'index'])->name('timetable');
 Route::resource('timetables', TimetableController::class);
 Route::delete('/timetable', [TimetableController::class, 'destroy'])->name('delete.timetable');
+Route::resource('roles', App\Http\Controllers\RoleController::class);
+Route::resource('permissions', App\Http\Controllers\PermissionController::class);
+
+Route::resource('users', UserController::class);
+Route::get('users/{userId}/delete', [UserController::class, 'destroy']);

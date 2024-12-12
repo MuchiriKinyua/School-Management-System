@@ -25,13 +25,13 @@ class UserController extends Controller
     }
     public function index(){
         $users = User::get();
-        return view('role-permission.user.index', [
+        return view('user.index', [
             'users' => $users
         ]);
     }
     public function create(){
         $roles = Role::pluck('name', 'name')->all();
-        return view('role-permission.user.create', [
+        return view('user.create', [
             'roles' => $roles
         ]);
     }
@@ -50,13 +50,13 @@ class UserController extends Controller
 
         $user->syncRoles($request->roles);
 
-        return redirect('/users')->with('status', 'User created successfully with roles');
+        return redirect('/users.index')->with('status', 'User created successfully with roles');
 
     }
     public function edit(User $user){
         $roles = Role::pluck('name', 'name')->all();
         $userRoles = $user->roles->pluck('name', 'name')->all();
-        return view('role-permission.user.edit', [
+        return view('user.edit', [
             'user' => $user,
             'roles' => $roles,
             'userRoles' => $userRoles

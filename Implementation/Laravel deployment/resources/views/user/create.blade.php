@@ -1,7 +1,4 @@
-<!-- resources/views/role-permission/user/index.blade.php -->
-@extends('layouts.app-web-layout')
-
-@section('title', 'Roles')
+@extends('layouts.app')
 
 @section('content')
 <div class="container mt-4">
@@ -15,7 +12,7 @@
                     </a>
                 </div>
                 <div class="card-body">
-                    <form action="{{ url('users') }}" method="POST">
+                    <form action="{{ route('users.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="">Name</label>
