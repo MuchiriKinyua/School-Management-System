@@ -1,5 +1,4 @@
 <x-laravel-ui-adminlte::adminlte-layout>
-    <title>School ERP</title>
     <title>{{ config('app.name') }}</title>
 
     <body class="hold-transition sidebar-mini layout-fixed">
@@ -23,35 +22,43 @@
                 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown user-menu">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                            <img src="https://assets.infyom.com/logo/blue_logo_150x150.png"
-                                class="user-image img-circle elevation-2" alt="User Image">
-                            <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                            <!-- User image -->
-                            <li class="user-header bg-primary">
+                    @if (Auth::check())
+                        <li class="nav-item dropdown user-menu">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
                                 <img src="https://assets.infyom.com/logo/blue_logo_150x150.png"
-                                    class="img-circle elevation-2" alt="User Image">
-                                <p>
-                                    {{ Auth::user()->name }}
-                                    <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
-                                </p>
-                            </li>
-                            <!-- Menu Footer-->
-                            <li class="user-footer">
-                                <a href="#" class="btn btn-default btn-flat">Profile</a>
-                                <a href="#" class="btn btn-default btn-flat float-right"
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    Sign out
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                                    class="user-image img-circle elevation-2" alt="User Image">
+                                <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                                <!-- User image -->
+                                <li class="user-header bg-primary">
+                                    <img src="https://assets.infyom.com/logo/blue_logo_150x150.png"
+                                        class="img-circle elevation-2" alt="User Image">
+                                    <p>
+                                        {{ Auth::user()->name }}
+                                        <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
+                                    </p>
+                                </li>
+                                <!-- Menu Footer-->
+                                <li class="user-footer">
+                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                    <a href="#" class="btn btn-default btn-flat float-right"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        Sign out
+                                    </a>
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a href="{{ route('login') }}" class="nav-link">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </nav>
 

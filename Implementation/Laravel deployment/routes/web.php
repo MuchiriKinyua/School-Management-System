@@ -14,12 +14,12 @@ use App\Http\Controllers\PollController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+Auth::routes();
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
-
-Auth::routes(['verify' => true]);
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::get('parentstudent/export/', [App\Http\Controllers\ParentStudentController::class, 'export']);
@@ -122,3 +122,5 @@ Route::resource('permissions', App\Http\Controllers\PermissionController::class)
 
 Route::resource('users', UserController::class);
 Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
+
+
