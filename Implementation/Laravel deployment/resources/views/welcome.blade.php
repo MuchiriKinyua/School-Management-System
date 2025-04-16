@@ -1,37 +1,27 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>SchoolERP</title>
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <!-- Styles -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to SchoolERP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="antialiased">
-<div class="welcomeimage">
-    <img src="{{ asset('images/welcomeschoolerp.jpeg') }}" alt="Welcome to SchoolERP">
-</div>
+<body style="background-color: blue;">
 
-    <div class="login">
-        @if (Route::has('login'))
-            <div class="register">
-                @auth
-                    <a href="{{ url('/home') }}" class="home-link font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Home</a>
-                @else
-                    <div class="links">
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="register-link font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Register</a>
-                        @endif
-                        <a href="{{ route('login') }}" class="login-link font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Log In</a>
-                    </div>
-                @endauth
-            </div>
-        @endif
+    <div class="container text-center mt-5">
+        <img src="https://img.icons8.com/ios-filled/100/000000/school.png" alt="SchoolERP Logo">
+        <h1 class="display-4 mt-3">Welcome to SchoolERP</h1>
+        <p class="lead">Your all-in-one platform for school management</p>
+
+        <div class="mt-4">
+            <a href="{{ route('login') }}" class="btn btn-primary btn-lg me-2">Login</a>
+            <a href="{{ route('register') }}" class="btn btn-primary btn-lg">Register</a>
+        </div>
+
+        <footer class="mt-5 text-muted">
+            &copy; {{ date('Y') }} SchoolERP by Muchiri. All rights reserved.
+        </footer>
     </div>
+
 </body>
 </html>

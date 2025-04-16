@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
@@ -14,21 +15,24 @@ use App\Http\Controllers\PollController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
-Auth::routes();
+Auth::routes(['verify' => true]);
 
-Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
-Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/', function () {
+    return view('welcome');
 });
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::post('/login', [LoginController::class, 'login']);
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::get('parentstudent/export/', [App\Http\Controllers\ParentStudentController::class, 'export']);
 Route::get('student/export/', [App\Http\Controllers\StudentController::class, 'export']);
 Route::get('parents/export/', [App\Http\Controllers\ParentsController::class, 'export']);
 
-Route::post('/login', [LoginController::class, 'login']);
 
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::controller(PaymentController::class)
     ->prefix('payments')
@@ -91,7 +95,7 @@ Route::resource('admin/employees', App\Http\Controllers\Admin\employeesControlle
 Route::resource('polls', App\Http\Controllers\PollController::class);
 
 Route::resource('uploads', App\Http\Controllers\UploadController::class);
-Route::get('/', [UploadController::class, 'index']);
+Route::get('/upload', [UploadController::class, 'index']);
 Route::post('/uploadFile', [UploadController::class, 'uploadFile'])->name('uploadFile');
 
 Route::prefix('poll')->middleware('auth')->group(function(){
@@ -122,5 +126,4 @@ Route::resource('permissions', App\Http\Controllers\PermissionController::class)
 
 Route::resource('users', UserController::class);
 Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
-
 
