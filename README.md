@@ -1,6 +1,6 @@
 # SchoolERP </br>
 
-![schoolerp](https://github.com/user-attachments/assets/843cc70a-214e-4572-9381-c3a2a2948bbf)
+![Screenshot from 2025-04-16 19-33-58](https://github.com/user-attachments/assets/db7555fc-5c1f-477e-9245-4fdd39a9a9c2)
 
 ## 1. Problem Statement </br>
 The schoolerp project addresses the need for efficient student and parent management in schools, particularly to streamline enrollment, track student records, and facilitate parent-student connections. In many schools, these processes are manually handled, leading to inefficiencies, data errors, and difficulties in keeping stakeholders informed and engaged. </br>
