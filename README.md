@@ -28,7 +28,7 @@ MySQL database server </br>
 XAMPP (for Apache and MySQL) or an equivalent LAMP stack on Ubuntu </br>
 M-Pesa sandbox credentials (for testing purposes) </br>
 
-![schoolerp1](https://github.com/user-attachments/assets/7af0a483-9ad8-41c9-87ca-ad1a4560c8b5)
+<img width="1849" height="998" alt="Screenshot from 2025-09-03 01-57-04" src="https://github.com/user-attachments/assets/ed2aa910-36e0-479b-a6cd-147a6323f173" />
 
 ## 5. Conclusions </br>
 The schoolerp project demonstrates a holistic approach to school management by integrating student and parent management with a secure, convenient payment solution. </br>
