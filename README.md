@@ -3,6 +3,9 @@
 ![Screenshot from 2025-04-16 19-33-58](https://github.com/user-attachments/assets/db7555fc-5c1f-477e-9245-4fdd39a9a9c2)
 
 ## 1. Problem Statement </br>
+
+<img width="1849" height="998" alt="Screenshot from 2025-09-03 01-55-30" src="https://github.com/user-attachments/assets/dcf84760-0821-4e55-936e-4ce62f849c3b" />
+
 The schoolerp project addresses the need for efficient student and parent management in schools, particularly to streamline enrollment, track student records, and facilitate parent-student connections. In many schools, these processes are manually handled, leading to inefficiencies, data errors, and difficulties in keeping stakeholders informed and engaged. </br>
 
 Additionally, the school management system integrates with payment solutions like M-Pesa, allowing parents to make school fee payments seamlessly. However, integrating and managing these payments within an ERP (Enterprise Resource Planning) system poses a challenge for schools without dedicated technical resources. </br>
